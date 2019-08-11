@@ -70,34 +70,22 @@ function create ()
         repeat: -1
     });
 
-    //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
-    //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 150 }
-    });
-
-    stars.children.iterate(function (child) {
-
-        //  Give each star a slightly different bounce
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-    });
-
-    stars = this.physics.add.group();
-
-    //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
-    this.physics.add.collider(stars, player);
-    this.physics.add.collider(stars , platforms);
 
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(player, stars, collectStar, null, this);
-
+    setInterval( () => {
+        let step = Math.floor(Math.random()* (600 - 70 + 1) + 70);
+        let xroll = Math.floor(Math.random() * 50); // Kasdédi
+        
+        stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: { x: xroll, y: -30, stepX: step },
+            setVelocityX: 150
+    });
     this.physics.add.collider(player, stars, hitstar, null, this);
+    }, 400);
 }
 
 function update () {
@@ -117,19 +105,10 @@ function update () {
     } if (cursors.up.isDown && player.body.touching.down) player.setVelocityY(-330);
 }
 
-function collectStar (player, star) {
-    star.disableBody(true, true);
-    score += 10;
-    scoreText.setText('Score: ' + score);
-    star.setCollideWorldBounds(true);
-    star.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    star.allowGravity = false;
-    }
 
-
-function hitstar (player, star)
-{
+function hitstar (player, star) {
+    this.physics.pause();
     player.setTint(0xff0000);
+    player.anims.play('turn');
     gameOver = true;
 }
-

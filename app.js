@@ -30,7 +30,7 @@ function preload ()
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('star', 'assets/star.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -87,20 +87,17 @@ function create ()
 
     });
 
-    bombs = this.physics.add.group();
-
-    //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    stars = this.physics.add.group();
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
-    this.physics.add.collider(stars);
-    this.physics.add.collider(bombs , platforms);
+    this.physics.add.collider(stars, player);
+    this.physics.add.collider(stars , platforms);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
+    this.physics.add.collider(player, stars, hitstar, null, this);
 }
 
 function update () {
@@ -124,19 +121,13 @@ function collectStar (player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
-
-
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
+    star.setCollideWorldBounds(true);
+    star.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    star.allowGravity = false;
     }
 
 
-function hitBomb (player, bomb)
+function hitstar (player, star)
 {
     player.setTint(0xff0000);
     gameOver = true;

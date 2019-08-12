@@ -71,32 +71,37 @@ function create ()
     });
 
     cursors = this.input.keyboard.createCursorKeys();
-
     this.physics.add.collider(player, platforms);
-
-    setInterval( () => {
-        let step = Math.floor(Math.random()* (600 - 70 + 1) + 70);
-        let xroll = Math.floor(Math.random() * 50); // Kasdédi
-        
-        stars = this.physics.add.group({
-            key: 'star',
-            repeat: 11,
-            setXY: { x: xroll, y: -30, stepX: step },
-            setVelocityX: 150
-    });
-    this.physics.add.collider(player, stars, hitstar, null, this);
-    }, 400);
+    let compt = 0;
+    let timer = 400;
+        setInterval( () => {
+            let step = Math.floor(Math.random() * (600 - 40 + 1) + 40);
+            let xroll = Math.floor(Math.random() * -980); // Kassdéd
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 11,
+                setXY: { x: xroll, y: -20, stepX: step}
+            });
+        stars.children.iterate((child) => {
+            child.setVelocityY(Phaser.Math.Between(-100, 200), 200);
+            child.setVelocityX(Phaser.Math.Between(200 && -300, 200), 200); // 200 vitesse gravité
+        });
+        this.physics.add.collider(player, stars, hitstar, null, this);
+        this.physics.add.collider(stars.children , stars);
+        compt++
+        console.log(compt)
+        }, timer);
 }
 
 function update () {
     if (gameOver) return;
 
     if (cursors.left.isDown) {
-        player.setVelocityX(-160);
+        player.setVelocityX(-360);
         player.anims.play('left', true);
 
     } else if (cursors.right.isDown) {
-        player.setVelocityX(160);
+        player.setVelocityX(360);
         player.anims.play('right', true);
 
     } else {
@@ -106,9 +111,11 @@ function update () {
 }
 
 
+
 function hitstar (player, star) {
     this.physics.pause();
     player.setTint(0xff0000);
     player.anims.play('turn');
     gameOver = true;
 }
+

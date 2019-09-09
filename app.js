@@ -22,6 +22,7 @@ var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
+let timer = 400;
 
 var game = new Phaser.Game(config);
 
@@ -30,19 +31,19 @@ function preload ()
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
-    this.load.image('star', 'assets/star.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create ()
-{
+{   // The score
+    scoreText = this.add.text(160, 160, 'score:0', { fontSize: '32px', fill: '#000' });
     //  A simple background for our game
     this.add.image(400, 300, 'sky');
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    platforms.create(400, 580, 'ground').setScale(2).refreshBody();
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'dude');
     //  Player physics properties. Give the little guy a slight bounce.
@@ -72,11 +73,12 @@ function create ()
 
     cursors = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, platforms);
-    let compt = 0;
-    let timer = 400;
         setInterval( () => {
+            if (gameOver) return;
             let step = Math.floor(Math.random() * (600 - 40 + 1) + 40);
-            let xroll = Math.floor(Math.random() * -980); // Kassdéd
+            let xroll = Math.floor(Math.random() * -980);
+            score++ ; 
+            scoreText . setText ( 'Score:' + score ); 
             stars = this.physics.add.group({
                 key: 'star',
                 repeat: 11,
@@ -88,8 +90,7 @@ function create ()
         });
         this.physics.add.collider(player, stars, hitstar, null, this);
         this.physics.add.collider(stars.children , stars);
-        compt++
-        console.log(compt)
+
         }, timer);
 }
 
@@ -109,8 +110,6 @@ function update () {
         player.anims.play('turn');
     } if (cursors.up.isDown && player.body.touching.down) player.setVelocityY(-330);
 }
-
-
 
 function hitstar (player, star) {
     this.physics.pause();
